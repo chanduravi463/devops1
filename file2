@@ -1,14 +1,50 @@
 FROM centos:7
-
 RUN yum install httpd -y
-
 COPY index.html /var/www/html/
-
 EXPOSE 80
-
 ENV user = Ravi
-
 ENTRYPOINT ["/bin/bash", "-c", "httpd && bash"]
+
+
+
+ec2 root password
+
+
+
+#!/bin/bash
+sudo sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo service sshd restart
+sudo echo 'root:vishnu' | chpasswd
+hostname APPSERVER
+
+
+yum install httpd -y && service httpd start
+
+aws  s3 sync s3://15-april-2022 /var/www/html
+
+yum install httpd -y
+yum update -y
+sudo service httpd start
+chkconfig httpd on
+echo "Automation Script for EC2 !!!!" > /var/www/html/index.html
+
+
+
+#!/bin/bash
+sudo sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo service sshd restart
+sudo echo 'root:vishnu' | chpasswd
+hostname APPSERVER
+
+yum install httpd -y
+yum update -y
+sudo service httpd start
+chkconfig httpd on
+aws s3 sync s3://softflair.in /var/www/html
+
+
 
 
 
