@@ -94,3 +94,225 @@ Here ,
 
 
 
+
+
+
+Docker_app.txt
+
+1. git clone https://github.com/linuxacademy/content-dockerquest-spacebones.git
+2. docker volume create missionstatus
+3. docker volume inspect missionstatus
+4. cp -r /home/user/content-dockerquest-spacebones/volumes/ /var/lib/docker/volumes/missionstatus/_data/
+5. docker run -d -p 80:80 --name fishin-mission --mount source=missionstatus,target=/usr/local/apache2/htdocs httpd
+
+
+
+
+
+Complete Setup of a Swarm Mode Cluster with
+Managers and Worker Nodes
+• manager setup
+• docker swarm
+• init --advertise-addr [ip address of manager]
+
+• take note (copy) the necessary docker swarm join command and token
+• join-token manager - to add another manager, following prompts
+• join-token worker
+• will redisplay the command and token needed for a node to join a swarm
+• worker node setup
+
+• docker swarm
+• join --token [token]
+• repeated on each node intended for the cluster
+• verify
+• on management node
+• docker node ls
+• will display all joined nodes
+• docker system info
+• show state of the swarm in the output
+
+Extend the Instructions to Run Individual Containers into Running Services Under Swarm and Manipulate a Running Stack of Services
+
+• initialize a single replica
+• docker service create [image]
+• new default: add --detach=[true/false] (false will be new default)
+• docker service update
+• options (see below)
+• update a running service
+• docker service ls
+• list running services with the number of replicas on a cluster
+• NOTE: run --detached=false to see a COOL VISUAL REPRESENTATION OF WHAT
+IS HAPPENING AND WHEN CONVERGED
+• options for create and/or update a service
+• --name [name of service]
+• --publish [#:#] - publish indicated ports and map to underlying host - NOTE:
+bypasses routing mesh
+• --env [var=value] - environment variable published to each worker in the swarm
+• --workdir [directory] - working directory inside the container/service
+• --user [username] - runas the indicated user
+• --network [network name] - can be used to bypass the mesh network for an overlay
+• --replicas [#]
+• --publish-add [#] - add port to host/swarm random high port
+• --publish [-p] published=[port],target=[port][/protocol TCP or UDP]
+• --secret [filename] - allows the service access to Docker secrets, use this for
+each secret
+• Docker (using the routing mesh) will make a service available on each node (even if a
+replica is not running on it) on the target port
+• additional options
+• --dns [IP[,IP]] - sets custom DNS servers
+• --entrypoing [command] - overwrites the default entrypoint of the image
+• --hostname [hostname] - create service with indicated hostname
+• --label [something=value] - sets metadata on a service
+• --mount [options see below] - works with volumes
+• type=[type of mount]
+• volume ::: source=[name of volume to use] :::
+destination[containerpath to mount volume name] ::: volumelabel=[
+labelname] ::: an anonymous volume can just be a type
+and destination `— i.e. docker service create --name [name] --mount
+type=volume,destination=/path/container [image]`
+• bind ::: source=[host path] ::: destination[container path]
+• tmpfs
+• -- placement-pref
+• `‘spread=node.labels.datacenter=[value]’`
+• --limit-cpu [#] / --reserve-cpu [#]
+• reservation allows the specification of a ‘soft’ limit, must be set lower than the
+‘hard’ limit (in limit-cpu setting), used when contention is found, the limit-cpu is the
+MAX CPU that the container can use
+• this is a RATIO number of the number of CPUs available (i.e. limit of 1.5 on a 2
+CPU system gives one and a half max to container)
+
+• --limit-memory [#]/--reserve-memory [#]
+• same as memory in practice, only in MB or GB in implementation (minimum value
+is 4m)
+
+
+Increase and Decrease the Number of Replicas
+in a Service
+• can be set on launch
+• docker service create --name [name] --replicas 1 [image]
+• sets a single replica in the cluster swarm
+• can be updated on running service
+• docker service update --replicas 3 [name]
+• sets the number of replicas running on the indicated service to 3
+• note that this can be done to scale up or down as needed
+• same as running docker service scale [service]=[#] [service]=[#]
+
+
+
+How to Configure Docker to Use External DNS
+• /etc/docker/daemon.json { “dns”: [“8.8.8.8”, “8.8.4.4”] }
+• docker run -- dns [IP Address]
+• normal DNS is passed through from host
+• docker exec -it [container] /bin/bash
+• cat /etc/resolv.conf
+
+
+
+create free style project
+
+
+
+Set Up a Docker Jenkins Master:
+1.	sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+2.	sudo yum clean all
+3.	sudo yum install docker-ce-17.03.0.ce-1.el7.centos
+4.	sudo systemctl start docker
+5.	sudo docker pull jenkins:2.19.4
+6.	sudo mkdir /var/jenkins_home
+7.	sudo docker run -d -u root -p 8080:8080 -p 50000:50000 -v /var/jenkins_home:/var/jenkins_home jenkins:2.19.4
+
+Forking Github repo :
+https://github.com/vishnugonela/content-jenkins-freestyle.git
+
+Docker login:
+1.	sudo docker exec -it <ContainerID> bash
+2.	cd ~
+3.	ssh-keygen
+4.	cat .ssh/id_rsa.pub
+Return to your fork of the Jenkins Freestyle project on GitHub and press Settings, then Deploy keys. Press Add deploy key. Copy your public key into the text box. Give the key a title. Check Allow write access. Add key.
+Press Integrations & services on the left menu. Under Services, select Add service, then find Jenkins (Git plugin). For the Jenkins URL input the server's IP address, including the port 8080, then press Add Service.
+Return to the Jenkins Dashboard and click on New Item. Give it an item name of Lab Freestyle, then select Freestyle project. Click OK.
+Check the GitHub project checkbox, and input the GitHub URL for your fork of the project. Under Source Code Management, select Git, then input the repository's clone with SSH link, found under the green Clone or download button on the repository's page. Press Add, Jenkins besides the Credentials option. For Kind select SSH Username with private key. Set the Username to root, then set Private Key to From the Jenkins master ~/.ssh. Press Add. Now select the key from the credentials dropdown.
+For Repository Browser, select githubweb and set the URL to the main project URL. Save the changes.
+
+
+
+ mysql
+
+
+ 1  mysql
+    2  yum install mysql
+    3  mysql -h myappdb.crsqmpfiwsqi.us-east-1.rds.amazonaws.com -u root -p
+    4  hostname
+    5  vi /etc/sysconfig/networking/
+    6  vi /etc/sysconfig/network
+    7  /etc/init.d/network restart
+    8  hostname
+    9  init 6
+   10  exit
+   11  docker
+   12  yum install docker
+   13  docker images
+   14  service docker start
+   15  docker images
+   16  docker ps
+   17  docker pull centos
+   18  docker images
+   19  docker run -it ff426288ea90 /bin/bash
+   20  docker images
+   21  docker ps
+   22  ls
+   23  touch Dockerfile
+   24  ls
+   25  vim Dockerfile
+   26  cat Dockerfile
+   27  docker images
+   28  ls
+   29  docker build -t nginximg
+   30  ls
+   31  pwd
+   32  docker build -t nginximg .
+   33  vim Dockerfile
+   34  docker build -t nginximg .
+   35  docker images
+   36  docker run -it -p 9000:80 07cb39e77628 /bin/bash
+   37  ls
+   38  pwd
+   39  vim Dockerfile
+   40  history
+   41  vim Dockerfile
+   42  docker images
+   43  docker build -t myapp .
+   44  docker images
+   45  docker run -it -p 9001:80 54a77d6cf4f8 /bin/bash
+   46  docker ps
+   47  docker images
+   48  docker run -it -p 9002:80 54a77d6cf4f8 /bin/bash
+   49  docker ps
+   50  ps -eaf
+   51  ls
+   52  cat Dockerfile
+   53  docker ps
+   54  docker attch 7a76e8b22915
+   55  docker attach 7a76e8b22915
+   56  ls
+   57  df -kh
+   58  ca /var/lib/docker/
+   59  ls
+   60  cd /var/lib/docker/
+   61  ls
+   62  cd containers
+   63  ls
+   64  docker ps -a
+   65  cd 4eb96c6a26e7c0a304740e272b4a3abe966b74bfde8cad942a5dad7cab1e183e
+   66  ls
+   67  cd ..
+   68  ls
+   69  cd ..
+   70  ls
+   71  cd volumes
+   72  ls
+   73  cd
+   74  history
+   75  history > history.txt
+
