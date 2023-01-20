@@ -1,0 +1,22 @@
+<html>
+  <head></head>
+  <style>
+    .a{
+      margin: auto;
+      font-family:Georgia, 'Times New Roman', Times, serif;
+    }
+    .b{
+      margin-left:65;
+      font-family:Georgia, 'Times New Roman', Times, serif;
+    }
+    .c{
+      margin-left: 120;
+      font-family:Georgia, 'Times New Roman', Times, serif;
+    }
+  </style>
+  <body>
+    <h3 class="a">Lover</h3>
+    <h3 class="b">boy</h3>
+    <h3 class="c">Ravi</h3>
+  </body>
+</html>
